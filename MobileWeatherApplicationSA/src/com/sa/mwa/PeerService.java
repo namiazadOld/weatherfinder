@@ -16,6 +16,7 @@ public class PeerService extends Service{
 	TemperatureSensorListener temperatureSensorListener;
 	
 	public static final int TEMPERATURE_MESSAGE = 1;
+	public static final int QUERY_MESSAGE = 2;
 
 	//PeerService introduces its own interface using this method.
 	@Override
