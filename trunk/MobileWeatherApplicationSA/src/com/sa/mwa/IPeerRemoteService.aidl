@@ -4,8 +4,8 @@ import com.sa.mwa.INotifyTemperatureChanged;
 
 interface IPeerRemoteService 
 {
-	double retrieveTemparature();
-	double retrieveHumidity();
+	float retrieveTemparature();
+	float retrieveHumidity();
 	void registerCallBack(INotifyTemperatureChanged ntc);
 	void unregisterCallBack(INotifyTemperatureChanged ntc);
 }
