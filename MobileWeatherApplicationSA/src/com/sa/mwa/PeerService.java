@@ -4,6 +4,7 @@ import java.util.Random;
 
 import android.app.Service;
 import android.content.Intent;
+import android.hardware.SensorManager;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteCallbackList;
@@ -12,7 +13,7 @@ import android.os.RemoteException;
 public class PeerService extends Service{
 
 	private final RemoteCallbackList<INotifyTemperatureChanged> callBacks = new RemoteCallbackList<INotifyTemperatureChanged>();
-	private  Random random;
+	TemperatureSensorListener temperatureSensorListener;
 	
 	public static final int TEMPERATURE_MESSAGE = 1;
 
@@ -45,7 +46,7 @@ public class PeerService extends Service{
 				}
 				
 				callBacks.finishBroadcast();
-				sendMessageDelayed(obtainMessage(TEMPERATURE_MESSAGE), 100);
+				sendMessageDelayed(obtainMessage(TEMPERATURE_MESSAGE), 1000);
 			}
 		};
 		
@@ -53,16 +54,17 @@ public class PeerService extends Service{
 	
 	@Override
 	public void onCreate() {
+		temperatureSensorListener = new TemperatureSensorListener();
+		temperatureSensorListener.connect(this, SENSOR_SERVICE);
+		temperatureSensorListener.registerListener(SensorManager.SENSOR_TEMPERATURE, SensorManager.SENSOR_DELAY_NORMAL);
 		
 		//starting the message sending process
 		handler.sendEmptyMessage(TEMPERATURE_MESSAGE);
-		
-		random = new Random();
 	}
-	
 
 	@Override
 	public void onDestroy() {
+		temperatureSensorListener.unregisterListener();
 		handler.removeMessages(PeerService.TEMPERATURE_MESSAGE);
 	}
 	
@@ -83,13 +85,15 @@ public class PeerService extends Service{
 		}
 
 		@Override
-		public double retrieveHumidity() throws RemoteException {
-			return random.nextInt(100);
+		public float retrieveHumidity() throws RemoteException {
+			return -1;
 		}
 
 		@Override
-		public double retrieveTemparature() throws RemoteException {
-			return random.nextInt(40);
+		public float retrieveTemparature() throws RemoteException {
+
+			float rawTemperature = temperatureSensorListener.getCurrentTemperature();
+			return ((int)(rawTemperature * 10))/10;
 		}
 	};
 	
