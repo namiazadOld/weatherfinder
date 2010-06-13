@@ -10,11 +10,16 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 
 import android.os.Handler;
+import android.telephony.gsm.SmsMessage.MessageClass;
 
 public class QueryManager {
 
+	private XMPPConnection broadcastConnection;
 	private XMPPConnection connection;
 	private Handler handler;
+	private final String broadCastUsername = "android_broadcast";
+	private final String broadCastPassword = "intermilan";
+	private final String chatDomain = "jabber.org";
 	
 	public QueryManager(Handler handler)
 	{
@@ -33,11 +38,15 @@ public class QueryManager {
 					
 					handler.sendMessage(handler.obtainMessage(PeerService.CONNECTION_TO_CHAT_SERVER_PROCESSING));
 					
-					ConnectionConfiguration config = new ConnectionConfiguration("jabber.org", 5222, "jabber.org");
+					ConnectionConfiguration config = new ConnectionConfiguration(chatDomain, 5222, chatDomain);
+					
 					connection = new XMPPConnection(config);
 					connection.connect();
-					
 					connection.login(username, password);
+					
+					broadcastConnection = new XMPPConnection(config);
+					broadcastConnection.connect();
+					broadcastConnection.login(broadCastUsername, broadCastPassword);
 					
 					handler.sendMessage(handler.obtainMessage(PeerService.CONNECTION_TO_CHAT_SERVER_ESTABLISHED));
 
@@ -48,9 +57,20 @@ public class QueryManager {
 						@Override
 						public void processPacket(Packet packet) {
 								Message message = (Message)packet;
-								handler.sendMessage(handler.obtainMessage(PeerService.QUERY_MESSAGE, message.getBody().toString()));
+								handler.sendMessage(handler.obtainMessage(PeerService.QUERY_RESULT, message.getBody()));
 						}
 					}, filter);					
+					
+					
+					PacketFilter broadCastFilter = new MessageTypeFilter(Message.Type.chat);
+					broadcastConnection.addPacketListener(new PacketListener() {
+						
+						@Override
+						public void processPacket(Packet packet) {
+								Message message = (Message)packet;
+								handler.sendMessage(handler.obtainMessage(PeerService.QUERY_MESSAGE, message.getBody()));
+						}
+					}, broadCastFilter);
 					
 				} 
 				catch (XMPPException e) 
@@ -78,8 +98,11 @@ public class QueryManager {
 		thread.start();
 	}
 	
-	public void findWeather(String destination)
+	public float findWeather(String destination)
 	{
-		
+		Message msg = new Message(broadCastUsername + "@" + chatDomain, Message.Type.chat);
+		msg.setBody(destination);
+		broadcastConnection.sendPacket(msg);
+		return 12;
 	}
 }
