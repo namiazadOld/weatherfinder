@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.jivesoftware.smack.Chat;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Main extends Activity {
 
@@ -25,7 +27,7 @@ public class Main extends Activity {
 	private ConnectionStatus connectionStatus;
 	
 	TextView lbl_temperature, lbl_location, lbl_status;
-	Button btn_change;
+	Button btn_setting;
 	int i = 0;
 	Chat chat;
 	Login dlg_login;
@@ -54,8 +56,8 @@ public class Main extends Activity {
 		lbl_status = (TextView)findViewById(R.id.lbl_status);
 		lbl_status.setOnClickListener(lbl_status_onClick);
 		
-		btn_change = (Button) findViewById(R.id.btn_change);
-		btn_change.setOnClickListener(btn_change_onClick);
+		btn_setting = (Button) findViewById(R.id.btn_setting);
+		btn_setting.setOnClickListener(btn_setting_onClick);
 		
 		dlg_login = new Login(this);
 	}
@@ -63,9 +65,12 @@ public class Main extends Activity {
 	private void initializeEnvironmentParameter()
 	{
 		connectionStatus = ConnectionStatus.Disconnected;
+		
+		
+		
 	}
 	
-	private Button.OnClickListener btn_change_onClick = new Button.OnClickListener(){
+	private Button.OnClickListener btn_setting_onClick = new Button.OnClickListener(){
 
 		@Override
 		public void onClick(View v) {
@@ -74,7 +79,10 @@ public class Main extends Activity {
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
+			
+			
 		}
+		
 		
 	};
 	
@@ -188,6 +196,11 @@ public class Main extends Activity {
 				{
 					connectionStatus = ConnectionStatus.Disconnected;
 					lbl_status.setText("Not Connected!");
+				}
+				break;
+				case PeerService.EXCEPTION_OCCURED:
+				{
+					Toast.makeText(getBaseContext(), (String) msg.obj, Toast.LENGTH_LONG).show();
 				}
 				break;
 				default:

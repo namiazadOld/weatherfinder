@@ -9,4 +9,5 @@ interface INotifyValueChanged
 	void disconnected();
 	void queryResultReceived();
 	void queryReceived(String content);
+	void exceptionOccured(String message);
 }

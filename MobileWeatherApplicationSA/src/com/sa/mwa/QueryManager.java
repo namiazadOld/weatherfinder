@@ -10,7 +10,6 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 
 import android.os.Handler;
-import android.telephony.gsm.SmsMessage.MessageClass;
 
 public class QueryManager {
 
@@ -98,11 +97,22 @@ public class QueryManager {
 		thread.start();
 	}
 	
-	public float findWeather(String destination)
+	public float findWeather(final String destination) throws CustomException
 	{
-		Message msg = new Message(broadCastUsername + "@" + chatDomain, Message.Type.chat);
-		msg.setBody(destination);
-		broadcastConnection.sendPacket(msg);
+		if (connection == null || broadcastConnection == null || !connection.isConnected() || !broadcastConnection.isConnected())
+			throw new CustomException(CustomException.CONNECTION_FAILED);
+		
+		Thread thread = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				Message msg = new Message(broadCastUsername + "@" + chatDomain, Message.Type.chat);
+				msg.setBody(destination);
+				broadcastConnection.sendPacket(msg);
+			}
+		});
+		
+		thread.start();
 		return 12;
 	}
 }
