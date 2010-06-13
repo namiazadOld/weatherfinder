@@ -9,7 +9,6 @@ import android.widget.EditText;
 
 public class Login extends Dialog {
 
-	private Main mwaClient;
 	private Button btn_connect;
 	private Button btn_cancel;
 	private EditText edt_username;
@@ -18,7 +17,6 @@ public class Login extends Dialog {
 	
 	public Login(Main mwaClient) {
 		super(mwaClient);
-		this.mwaClient = mwaClient;
 	}
 	
 	public String getUsername()
