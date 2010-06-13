@@ -37,4 +37,9 @@ public class LogNotifyTemperatureChanged  extends INotifyValueChanged.Stub{
 	public void queryReceived(String destination) throws RemoteException {
 		
 	}
+
+	@Override
+	public void exceptionOccured(String message) throws RemoteException {
+		
+	}
 }

@@ -48,4 +48,9 @@ public class GuiNotifyTemperatureChanged extends INotifyValueChanged.Stub
 		handler.sendMessage(handler.obtainMessage(PeerService.QUERY_MESSAGE, destination));
 	}
 
+	@Override
+	public void exceptionOccured(String message) throws RemoteException {
+		handler.sendMessage(handler.obtainMessage(PeerService.EXCEPTION_OCCURED, message));
+	}
+
 }
