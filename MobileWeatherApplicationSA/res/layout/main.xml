@@ -366,7 +366,7 @@ android:orientation="horizontal"
 android:id="@+id/lbl_status"
 android:layout_width="wrap_content"
 android:layout_height="wrap_content"
-android:text="Connecting..."
+android:text="Not Connected!"
 android:textSize="12sp"
 >
 </TextView>

@@ -31,6 +31,8 @@ public class QueryManager {
 				try 
 				{
 					
+					handler.sendMessage(handler.obtainMessage(PeerService.CONNECTION_TO_CHAT_SERVER_PROCESSING));
+					
 					ConnectionConfiguration config = new ConnectionConfiguration("jabber.org", 5222, "jabber.org");
 					connection = new XMPPConnection(config);
 					connection.connect();
@@ -39,6 +41,7 @@ public class QueryManager {
 					
 					handler.sendMessage(handler.obtainMessage(PeerService.CONNECTION_TO_CHAT_SERVER_ESTABLISHED));
 
+					
 					PacketFilter filter = new MessageTypeFilter(Message.Type.chat);
 					connection.addPacketListener(new PacketListener() {
 						
@@ -54,6 +57,21 @@ public class QueryManager {
 				{
 					handler.sendMessage(handler.obtainMessage(PeerService.CONNECTION_TO_CHAT_SERVER_FAILED));
 				}
+			}
+		});
+		
+		thread.start();
+	}
+	
+	public void disconnectFromChatServer()
+	{
+		Thread thread = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+
+				connection.disconnect();
+				handler.sendMessage(handler.obtainMessage(PeerService.CONNECTION_TO_CHAT_SERVER_DISCONNECTED));
 			}
 		});
 		

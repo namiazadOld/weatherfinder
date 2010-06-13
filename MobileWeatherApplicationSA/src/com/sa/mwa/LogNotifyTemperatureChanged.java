@@ -17,4 +17,14 @@ public class LogNotifyTemperatureChanged  extends INotifyValueChanged.Stub{
 	public void connectionFailed() throws RemoteException {
 		
 	}
+
+	@Override
+	public void connectionProcessing() throws RemoteException {
+		
+	}
+
+	@Override
+	public void disconnected() throws RemoteException {
+		
+	}
 }

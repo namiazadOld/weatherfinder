@@ -18,6 +18,8 @@ public class PeerService extends Service{
 	public static final int QUERY_MESSAGE = 2;
 	public static final int CONNECTION_TO_CHAT_SERVER_ESTABLISHED = 3;
 	public static final int CONNECTION_TO_CHAT_SERVER_FAILED = 4;
+	public static final int CONNECTION_TO_CHAT_SERVER_PROCESSING = 5;
+	public static final int CONNECTION_TO_CHAT_SERVER_DISCONNECTED = 6;
 
 	//PeerService introduces its own interface using this method.
 	@Override
@@ -83,6 +85,36 @@ public class PeerService extends Service{
 						}
 					}
 				}break;
+				case CONNECTION_TO_CHAT_SERVER_PROCESSING:
+				{
+					final int n = callBacks.beginBroadcast();
+					for (int i = 0; i < n; i++)
+					{
+						try
+						{
+							callBacks.getBroadcastItem(i).connectionProcessing();
+						}
+						catch (RemoteException re)
+						{
+							
+						}
+					}
+				}break;
+				case CONNECTION_TO_CHAT_SERVER_DISCONNECTED:
+				{
+					final int n = callBacks.beginBroadcast();
+					for (int i = 0; i < n; i++)
+					{
+						try
+						{
+							callBacks.getBroadcastItem(i).disconnected();
+						}
+						catch (RemoteException re)
+						{
+							
+						}
+					}
+				}break;
 			}
 		};
 		
@@ -98,7 +130,7 @@ public class PeerService extends Service{
 		handler.sendEmptyMessage(TEMPERATURE_MESSAGE);
 		
 		queryManager = new QueryManager(handler);
-		queryManager.connectToChatServer();		
+			
 	}
 
 	@Override
@@ -133,6 +165,17 @@ public class PeerService extends Service{
 
 			float rawTemperature = temperatureSensorListener.getCurrentTemperature();
 			return ((int)(rawTemperature * 10))/10;
+		}
+
+		@Override
+		public void establishConnection() throws RemoteException {
+			queryManager.connectToChatServer();	
+		}
+
+		@Override
+		public void disconnect() throws RemoteException {
+			queryManager.disconnectFromChatServer();
+			
 		}
 	};
 	

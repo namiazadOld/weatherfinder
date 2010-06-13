@@ -13,7 +13,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
 		<service android:name=".PeerService" android:process=":remote">
             <intent-filter>
                 <!-- These are the interfaces supported by the service, which

@@ -5,12 +5,15 @@ import java.util.List;
 
 import org.jivesoftware.smack.Chat;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.RemoteException;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class Main extends Activity {
@@ -18,11 +21,13 @@ public class Main extends Activity {
 	private GuiNotifyTemperatureChanged guiListener;
 	private LogNotifyTemperatureChanged logListener;
 	private PeerServiceConnector peerServiceConnection;
+	private ConnectionStatus connectionStatus;
 	
 	TextView lbl_temperature, lbl_location, lbl_status;
 	Button btn_change;
 	int i = 0;
 	Chat chat;
+	Login dlg_login;
 	
 	private void establishServiceConnection()
 	{
@@ -44,21 +49,59 @@ public class Main extends Activity {
 	{
 		lbl_temperature = (TextView) findViewById(R.id.lbl_temperature);
 		lbl_location = (TextView) findViewById(R.id.lbl_location);
+		
 		lbl_status = (TextView)findViewById(R.id.lbl_status);
+		lbl_status.setOnClickListener(lbl_status_onClick);
 		
 		btn_change = (Button) findViewById(R.id.btn_change);
 		btn_change.setOnClickListener(btn_change_onClick);
+		
+		
+		dlg_login = new Login(this);
+	}
+	
+	private void initializeEnvironmentParameter()
+	{
+		connectionStatus = ConnectionStatus.Disconnected;
 	}
 	
 	private Button.OnClickListener btn_change_onClick = new Button.OnClickListener(){
 
 		@Override
 		public void onClick(View v) {
-			
-			
+			dlg_login.show();
 		}
 		
 	};
+	
+	private TextView.OnClickListener lbl_status_onClick = new TextView.OnClickListener(){
+
+		@Override
+		public void onClick(View v) {
+			switch (connectionStatus)
+			{
+				case Connected:
+				{
+					try {
+						peerServiceConnection.getRemoteService().disconnect();
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
+				}break;
+				case Disconnected:
+				{
+					try {
+						peerServiceConnection.getRemoteService().establishConnection();
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
+				}break;
+				default:
+			}
+		}
+		
+	};
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +113,9 @@ public class Main extends Activity {
 		
 		//ui element initialization
 		uiElementInitializing();
+		
+		//initializing environment parameters
+		initializeEnvironmentParameter();
 	}
 	
 	@Override
@@ -100,12 +146,26 @@ public class Main extends Activity {
 				break;
 				case PeerService.CONNECTION_TO_CHAT_SERVER_ESTABLISHED:
 				{
-					lbl_status.setText("Connected");
+					connectionStatus = ConnectionStatus.Connected;
+					lbl_status.setText("Connected.");
 				}
 				break;
 				case PeerService.CONNECTION_TO_CHAT_SERVER_FAILED:
 				{
-					lbl_status.setText("Connection Failed");
+					connectionStatus = ConnectionStatus.Disconnected;
+					lbl_status.setText("Connection Failed.");
+				}
+				break;
+				case PeerService.CONNECTION_TO_CHAT_SERVER_PROCESSING:
+				{
+					connectionStatus = ConnectionStatus.Connecting;
+					lbl_status.setText("Connecting...");
+				}
+				break;
+				case PeerService.CONNECTION_TO_CHAT_SERVER_DISCONNECTED:
+				{
+					connectionStatus = ConnectionStatus.Disconnected;
+					lbl_status.setText("Not Connected!");
 				}
 				break;
 				default:
