@@ -57,15 +57,6 @@ public class Main extends Activity {
 		btn_change = (Button) findViewById(R.id.btn_change);
 		btn_change.setOnClickListener(btn_change_onClick);
 		
-		lbl_location.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				dlg_login.show();
-			}
-		});
-		
 		dlg_login = new Login(this);
 	}
 	
@@ -78,7 +69,11 @@ public class Main extends Activity {
 
 		@Override
 		public void onClick(View v) {
-			dlg_login.show();
+			try {
+				peerServiceConnection.getRemoteService().findWeather("DELFT");
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
 		}
 		
 	};
@@ -160,6 +155,11 @@ public class Main extends Activity {
 					lbl_temperature.setText(Double.valueOf(temperature.getValue()).toString());
 				}
 				break;
+				case PeerService.QUERY_RESULT:
+				{
+					String content = (String) msg.obj;
+					lbl_location.setText(content);
+				}break;
 				case PeerService.QUERY_MESSAGE:
 				{
 					String content = (String) msg.obj;

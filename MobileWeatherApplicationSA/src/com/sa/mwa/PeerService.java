@@ -20,6 +20,7 @@ public class PeerService extends Service{
 	public static final int CONNECTION_TO_CHAT_SERVER_FAILED = 4;
 	public static final int CONNECTION_TO_CHAT_SERVER_PROCESSING = 5;
 	public static final int CONNECTION_TO_CHAT_SERVER_DISCONNECTED = 6;
+	public static final int QUERY_RESULT = 7;
 
 	//PeerService introduces its own interface using this method.
 	@Override
@@ -115,6 +116,36 @@ public class PeerService extends Service{
 						}
 					}
 				}break;
+				case QUERY_MESSAGE:
+				{
+					final int n = callBacks.beginBroadcast();
+					for (int i = 0; i < n; i++)
+					{
+						try
+						{
+							callBacks.getBroadcastItem(i).queryReceived((String)msg.obj);
+						}
+						catch (RemoteException re)
+						{
+							
+						}
+					}
+				}break;
+				case QUERY_RESULT:
+				{
+					final int n = callBacks.beginBroadcast();
+					for (int i = 0; i < n; i++)
+					{
+						try
+						{
+							callBacks.getBroadcastItem(i).queryResultReceived();
+						}
+						catch (RemoteException re)
+						{
+							
+						}
+					}
+				}break;
 			}
 		};
 		
@@ -176,6 +207,11 @@ public class PeerService extends Service{
 		public void disconnect() throws RemoteException {
 			queryManager.disconnectFromChatServer();
 			
+		}
+
+		@Override
+		public float findWeather(String destination) throws RemoteException {
+			return queryManager.findWeather(destination);
 		}
 	};
 	

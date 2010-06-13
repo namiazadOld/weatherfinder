@@ -10,4 +10,5 @@ interface IPeerRemoteService
 	void unregisterCallBack(INotifyValueChanged ntc);
 	void establishConnection(String username, String password);
 	void disconnect();
+	float findWeather(String destination);
 }

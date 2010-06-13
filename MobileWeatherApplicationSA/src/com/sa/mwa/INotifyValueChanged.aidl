@@ -7,4 +7,6 @@ interface INotifyValueChanged
 	void connectionFailed();
 	void connectionProcessing();
 	void disconnected();
+	void queryResultReceived();
+	void queryReceived(String content);
 }
