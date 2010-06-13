@@ -112,6 +112,7 @@ public class QueryManager {
 			}
 		});
 		
+		
 		thread.start();
 		return 12;
 	}

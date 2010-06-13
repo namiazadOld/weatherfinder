@@ -2,20 +2,15 @@ package com.sa.mwa;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.jivesoftware.smack.Chat;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,11 +21,10 @@ public class Main extends Activity {
 	private PeerServiceConnector peerServiceConnection;
 	private ConnectionStatus connectionStatus;
 	
-	TextView lbl_temperature, lbl_location, lbl_status;
-	Button btn_setting;
-	int i = 0;
-	Chat chat;
-	Login dlg_login;
+	private TextView lbl_temperature, lbl_location, lbl_status;
+	private Button btn_setting;
+	private Login dlg_login;
+	private Configuration dlg_configuration;
 	
 	private void establishServiceConnection()
 	{
@@ -60,14 +54,12 @@ public class Main extends Activity {
 		btn_setting.setOnClickListener(btn_setting_onClick);
 		
 		dlg_login = new Login(this);
+		dlg_configuration = new Configuration(this);
 	}
 	
 	private void initializeEnvironmentParameter()
 	{
 		connectionStatus = ConnectionStatus.Disconnected;
-		
-		
-		
 	}
 	
 	private Button.OnClickListener btn_setting_onClick = new Button.OnClickListener(){
@@ -80,7 +72,14 @@ public class Main extends Activity {
 				e.printStackTrace();
 			}
 			
-			
+			handler.post(new Runnable() {
+				
+				@Override
+				public void run() {
+					dlg_configuration.Prepare(peerServiceConnection);
+					dlg_configuration.show();
+				}
+			});
 		}
 		
 		
