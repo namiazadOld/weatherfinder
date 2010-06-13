@@ -10,14 +10,14 @@ public class PeerServiceConnector implements ServiceConnection {
 
 	
 	private IPeerRemoteService remoteService;
-	List<INotifyTemperatureChanged> registeredServices;
+	List<INotifyValueChanged> registeredServices;
 	
 	public IPeerRemoteService getRemoteService()
 	{
 		return remoteService;
 	}
 	
-	public PeerServiceConnector(List<INotifyTemperatureChanged> registeredServices)
+	public PeerServiceConnector(List<INotifyValueChanged> registeredServices)
 	{
 		this.registeredServices = registeredServices;
 	}
@@ -27,8 +27,8 @@ public class PeerServiceConnector implements ServiceConnection {
 		remoteService = IPeerRemoteService.Stub.asInterface(service);
 		try 
 		{
-			for (INotifyTemperatureChanged notifyTemperatureChanged : registeredServices)
-				remoteService.registerCallBack(notifyTemperatureChanged);
+			for (INotifyValueChanged notifyValueChanged : registeredServices)
+				remoteService.registerCallBack(notifyValueChanged);
         } 
 		catch (RemoteException e) 
         {
@@ -40,8 +40,8 @@ public class PeerServiceConnector implements ServiceConnection {
 	public void onServiceDisconnected(ComponentName name) {
 		try 
 		{
-			for (INotifyTemperatureChanged notifyTemperatureChanged : registeredServices)
-				remoteService.unregisterCallBack(notifyTemperatureChanged);
+			for (INotifyValueChanged notifyValueChanged : registeredServices)
+				remoteService.unregisterCallBack(notifyValueChanged);
         } 
 		catch (RemoteException e) 
         {

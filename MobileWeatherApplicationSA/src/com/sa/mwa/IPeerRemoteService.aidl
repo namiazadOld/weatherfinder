@@ -1,11 +1,11 @@
 package com.sa.mwa;
 
-import com.sa.mwa.INotifyTemperatureChanged;
+import com.sa.mwa.INotifyValueChanged;
 
 interface IPeerRemoteService 
 {
 	float retrieveTemparature();
 	float retrieveHumidity();
-	void registerCallBack(INotifyTemperatureChanged ntc);
-	void unregisterCallBack(INotifyTemperatureChanged ntc);
+	void registerCallBack(INotifyValueChanged ntc);
+	void unregisterCallBack(INotifyValueChanged ntc);
 }
