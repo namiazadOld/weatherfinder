@@ -77,4 +77,9 @@ public class QueryManager {
 		
 		thread.start();
 	}
+	
+	public void findWeather(String destination)
+	{
+		
+	}
 }
