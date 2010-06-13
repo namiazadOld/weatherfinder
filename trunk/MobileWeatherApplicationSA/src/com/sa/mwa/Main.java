@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -56,6 +57,14 @@ public class Main extends Activity {
 		btn_change = (Button) findViewById(R.id.btn_change);
 		btn_change.setOnClickListener(btn_change_onClick);
 		
+		lbl_location.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				dlg_login.show();
+			}
+		});
 		
 		dlg_login = new Login(this);
 	}
@@ -80,21 +89,34 @@ public class Main extends Activity {
 		public void onClick(View v) {
 			switch (connectionStatus)
 			{
-				case Connected:
-				{
-					try {
-						peerServiceConnection.getRemoteService().disconnect();
-					} catch (RemoteException e) {
-						e.printStackTrace();
-					}
-				}break;
 				case Disconnected:
 				{
-					try {
-						peerServiceConnection.getRemoteService().establishConnection();
-					} catch (RemoteException e) {
-						e.printStackTrace();
-					}
+					handler.post(new Runnable() {
+						
+						@Override
+						public void run() {
+							
+							dlg_login.Prepare(peerServiceConnection);
+							dlg_login.show();							
+						}
+					});
+				}break;
+				case Connected:
+				{
+					Thread thread = new Thread(new Runnable() {
+						
+						@Override
+						public void run() {
+							try {
+								peerServiceConnection.getRemoteService().disconnect();
+							} catch (RemoteException e) {
+								e.printStackTrace();
+							}
+						}
+					});
+					
+					thread.start();
+					
 				}break;
 				default:
 			}
@@ -121,8 +143,8 @@ public class Main extends Activity {
 	@Override
 	protected void onDestroy() {
 		
-//		if (peerServiceConnection != null)
-//			unbindService(peerServiceConnection);
+		if (peerServiceConnection != null)
+			unbindService(peerServiceConnection);
 	}
 	
 	private Handler handler = new Handler()

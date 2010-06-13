@@ -21,7 +21,7 @@ public class QueryManager {
 		this.handler = handler;
 	}
 	
-	public void connectToChatServer()
+	public void connectToChatServer(final String username, final String password)
 	{
 		Thread thread = new Thread(new Runnable() {
 			
@@ -37,7 +37,7 @@ public class QueryManager {
 					connection = new XMPPConnection(config);
 					connection.connect();
 					
-					connection.login("all_mwa_users", "Intermilan1");
+					connection.login(username, password);
 					
 					handler.sendMessage(handler.obtainMessage(PeerService.CONNECTION_TO_CHAT_SERVER_ESTABLISHED));
 
