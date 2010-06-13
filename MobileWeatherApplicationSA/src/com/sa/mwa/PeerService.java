@@ -22,6 +22,7 @@ public class PeerService extends Service{
 	public static final int CONNECTION_TO_CHAT_SERVER_DISCONNECTED = 6;
 	public static final int QUERY_RESULT = 7;
 	public static final int EXCEPTION_OCCURED = 8;
+	public static final int SETTING_INVOKED = 9;
 
 	//PeerService introduces its own interface using this method.
 	@Override
@@ -55,7 +56,7 @@ public class PeerService extends Service{
 					}
 					
 					callBacks.finishBroadcast();
-					sendMessageDelayed(obtainMessage(TEMPERATURE_MESSAGE), 1000);
+					sendMessageDelayed(obtainMessage(TEMPERATURE_MESSAGE), EnvironmentVariables.getRefreshRate(getBaseContext()));
 				}break;
 				case CONNECTION_TO_CHAT_SERVER_ESTABLISHED:
 				{
@@ -162,6 +163,10 @@ public class PeerService extends Service{
 						}
 					}
 				}break;
+				case SETTING_INVOKED:
+				{
+					EnvironmentVariables.settings(getBaseContext(), (String)msg.obj, msg.arg1);
+				}break;
 			}
 		};
 		
@@ -177,13 +182,14 @@ public class PeerService extends Service{
 		handler.sendEmptyMessage(TEMPERATURE_MESSAGE);
 		
 		queryManager = new QueryManager(handler);
-			
+		
+		EnvironmentVariables.initalize(getBaseContext());
 	}
 
 	@Override
 	public void onDestroy() {
-//		temperatureSensorListener.unregisterListener();     
-//		handler.removeMessages(PeerService.TEMPERATURE_MESSAGE);
+		temperatureSensorListener.unregisterListener();     
+		handler.removeMessages(PeerService.TEMPERATURE_MESSAGE);
 	}
 	
 	//implementation of the interface that this service exposes
@@ -234,6 +240,11 @@ public class PeerService extends Service{
 			}
 			
 			return -1;
+		}
+
+		@Override
+		public void settings(String deviceName, int refreshRate) throws RemoteException {
+			handler.sendMessage(handler.obtainMessage(PeerService.SETTING_INVOKED, refreshRate, 1, deviceName));
 		}
 	};
 	

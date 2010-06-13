@@ -11,4 +11,5 @@ interface IPeerRemoteService
 	void establishConnection(String username, String password);
 	void disconnect();
 	float findWeather(String destination);
+	void settings(String deviceName, int refreshRate);
 }
