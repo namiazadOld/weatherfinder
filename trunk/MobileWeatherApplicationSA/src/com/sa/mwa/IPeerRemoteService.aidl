@@ -8,4 +8,6 @@ interface IPeerRemoteService
 	float retrieveHumidity();
 	void registerCallBack(INotifyValueChanged ntc);
 	void unregisterCallBack(INotifyValueChanged ntc);
+	void establishConnection();
+	void disconnect();
 }
