@@ -168,8 +168,8 @@ public class PeerService extends Service{
 		}
 
 		@Override
-		public void establishConnection() throws RemoteException {
-			queryManager.connectToChatServer();	
+		public void establishConnection(String username, String password) throws RemoteException {
+			queryManager.connectToChatServer(username, password);	
 		}
 
 		@Override
