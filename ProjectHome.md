@@ -1,0 +1,1 @@
+software architecture assignment 3. creating android mobile weather finder application.
